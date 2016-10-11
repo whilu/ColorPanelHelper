@@ -2,6 +2,8 @@ package co.lujun.colorpanelhelper;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.editor.Editor;
 
 /**
  * Author: lujun(http://blog.lujun.co)
@@ -11,6 +13,19 @@ public class ColorPanelAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        // TODO: insert action logic here
+        showPanel(e);
+    }
+
+    private void showPanel(AnActionEvent e){
+        Editor editor = e.getData(PlatformDataKeys.EDITOR);
+
+        String colorHex;
+        if (editor != null){
+            // Support selected text
+            colorHex = editor.getSelectionModel().getSelectedText();
+
+            // TODO support hover over the color text
+        }
+
     }
 }
