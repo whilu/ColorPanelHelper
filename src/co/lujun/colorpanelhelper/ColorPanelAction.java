@@ -13,19 +13,23 @@ public class ColorPanelAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        showPanel(e);
+        getHexColor(e);
     }
 
-    private void showPanel(AnActionEvent e){
+    private void getHexColor(AnActionEvent e){
         Editor editor = e.getData(PlatformDataKeys.EDITOR);
 
-        String colorHex;
+        String colorStr = null;
         if (editor != null){
             // Support selected text
-            colorHex = editor.getSelectionModel().getSelectedText();
+            colorStr = editor.getSelectionModel().getSelectedText();
 
             // TODO support hover over the color text
         }
+        showPanel(editor, colorStr);
+    }
 
+    private void showPanel(Editor editor, String hexColor){
+        new ColorPanel(editor, hexColor);
     }
 }
