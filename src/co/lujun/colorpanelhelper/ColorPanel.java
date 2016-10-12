@@ -28,6 +28,7 @@ public class ColorPanel extends JFrame  {
     private JTextField textFieldB;
     private JTextField textFieldG;
     private JLabel labelAlpha;
+    private JTextArea colorPreviewTextArea;
 
     private boolean isHexColorStartWithSharp = false;
 
@@ -82,18 +83,20 @@ public class ColorPanel extends JFrame  {
         isHexColorStartWithSharp = hexColor.startsWith("#");
         hexColor = hexColor.replace("#", "");
         int length = hexColor.length();
-        if (!isHexNumber(hexColor) || length < 6){
+        if (!isHexNumber(hexColor) || length < 6 || length > 8){
             return;
         }
 
-        if (length >= 8){
-            hexColor = hexColor.substring(length - 8);
-        }else if (hexColor.charAt(0) == '0'){
+        String alphaHex;
+        if (length == 6){
+            alphaHex = "FF";
+        }else if (length == 7 && hexColor.charAt(0) == '0'){
             hexColor = "0" + hexColor;
+            alphaHex = "00";
         }else {
-            hexColor = "F" + hexColor;
+            alphaHex = hexColor.substring(0, length - 6);
         }
-        invalidateUI(convertHexStr2AlphaValue(hexColor.substring(0, 2)), hexColor);
+        invalidateUI(convertHexStr2AlphaValue(alphaHex), hexColor);
     }
 
     private String convertAlphaValue2HexStr(int value){
@@ -103,7 +106,7 @@ public class ColorPanel extends JFrame  {
 
     private int convertHexStr2AlphaValue(String hexStr){
         int value = Integer.parseInt(hexStr, 16);
-        return (1 - value / 255) * 100;
+        return (int) ((1 - (float) value / 255) * 100);
     }
 
     private static boolean isHexNumber(String str){
@@ -117,33 +120,44 @@ public class ColorPanel extends JFrame  {
         return result;
     }
 
+    private void changeHexColorField(){
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                String hexColor = textFieldHexColor.getText();
+                int length = hexColor.length();
+                if (!isHexNumber(hexColor) || length < 6 || length > 8){
+                    return;
+                }
+
+                String alphaHexStr;
+                if (length == 6){
+                    alphaHexStr = "FF";
+                }else {
+                    alphaHexStr = hexColor.substring(0, length - 6);
+                }
+                invalidateUI(convertHexStr2AlphaValue(alphaHexStr), hexColor);
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
     private void invalidateUI(int alphaValue, String hexColor){
-        if(TextUtils.isEmpty(hexColor) || hexColor.length() < 8 || !isHexNumber(hexColor)){
+        if(TextUtils.isEmpty(hexColor) || hexColor.length() < 6 || hexColor.length() > 8 || !isHexNumber(hexColor)){
             return;
         }
         sliderAlpha.setValue(alphaValue);
         labelAlpha.setText(alphaValue + "%");
         textFieldHexColor.setText(hexColor);
-        textFieldA.setText(hexColor.substring(0, 2));
-        textFieldR.setText(hexColor.substring(2, 4));
-        textFieldG.setText(hexColor.substring(4, 6));
-        textFieldB.setText(hexColor.substring(6, 8));
-    }
-
-    private void changeHexColorField(){
-        String hexColor = textFieldHexColor.getText();
-        int length = hexColor.length();
-        if (!isHexNumber(hexColor) || length < 6){
-            return;
-        }
-
-        String alphaHexStr;
-        if (length < 8){
-            alphaHexStr = hexColor.substring(0, length - 6);
-        }else {
-            alphaHexStr = hexColor.substring(length - 8, length - 6);
-        }
-        invalidateUI(convertHexStr2AlphaValue(alphaHexStr), hexColor.substring(length - 6));
+        int a = Integer.parseInt(hexColor.substring(0, hexColor.length() - 6), 16);
+        int r = Integer.parseInt(hexColor.substring(hexColor.length() - 6, hexColor.length() - 4), 16);
+        int g = Integer.parseInt(hexColor.substring(hexColor.length() - 4, hexColor.length() - 2), 16);
+        int b = Integer.parseInt(hexColor.substring(hexColor.length() - 2, hexColor.length()), 16);
+        textFieldA.setText(String.valueOf(a));
+        textFieldR.setText(String.valueOf(r));
+        textFieldG.setText(String.valueOf(g));
+        textFieldB.setText(String.valueOf(b));
+        colorPreviewTextArea.setBackground(new Color(r, g, b, a));
     }
 
     private void injectHexColor(Editor editor, String color){
