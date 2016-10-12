@@ -1,5 +1,6 @@
 package co.lujun.colorpanelhelper;
 
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import org.apache.http.util.TextUtils;
 
@@ -27,6 +28,8 @@ public class ColorPanel extends JFrame  {
     private JTextField textFieldB;
     private JTextField textFieldG;
     private JLabel labelAlpha;
+
+    private boolean isHexColorStartWithSharp = false;
 
     public ColorPanel(Editor editor, String hexColor){
         super("ColorPanelHelper");
@@ -76,6 +79,7 @@ public class ColorPanel extends JFrame  {
             }
         });
 
+        isHexColorStartWithSharp = hexColor.startsWith("#");
         hexColor = hexColor.replace("#", "");
         int length = hexColor.length();
         if (!isHexNumber(hexColor) || length < 6){
@@ -143,6 +147,15 @@ public class ColorPanel extends JFrame  {
     }
 
     private void injectHexColor(Editor editor, String color){
-
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                editor.getDocument().deleteString(editor.getSelectionModel().getSelectionStart(),
+                        editor.getSelectionModel().getSelectionEnd());
+                editor.getDocument().insertString(editor.getSelectionModel().getSelectionStart(),
+                        isHexColorStartWithSharp ? "#" + color : color);
+            }
+        };
+        WriteCommandAction.runWriteCommandAction(editor.getProject(), runnable);
     }
 }
