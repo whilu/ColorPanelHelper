@@ -9,6 +9,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +30,9 @@ public class ColorPanel extends JFrame  {
     private JTextField textFieldB;
     private JTextField textFieldG;
     private JLabel labelAlpha;
-    private JTextArea colorPreviewTextArea;
+    private JTextPane colorPreviewTextPane;
+
+    private SimpleAttributeSet simpleAttributeSet;
 
     private boolean isHexColorStartWithSharp = false;
 
@@ -53,7 +57,7 @@ public class ColorPanel extends JFrame  {
                 }else {
                     hexColor = convertAlphaValue2HexStr(alphaValue) + hexColor;
                 }
-                invalidateUI(alphaValue, hexColor);
+                invalidateUI(alphaValue, hexColor, true);
             }
         });
         textFieldHexColor.getDocument().addDocumentListener(new DocumentListener() {
@@ -80,6 +84,11 @@ public class ColorPanel extends JFrame  {
             }
         });
 
+        simpleAttributeSet = new SimpleAttributeSet();
+
+        if (TextUtils.isEmpty(hexColor)){
+            return;
+        }
         isHexColorStartWithSharp = hexColor.startsWith("#");
         hexColor = hexColor.replace("#", "");
         int length = hexColor.length();
@@ -96,7 +105,7 @@ public class ColorPanel extends JFrame  {
         }else {
             alphaHex = hexColor.substring(0, length - 6);
         }
-        invalidateUI(convertHexStr2AlphaValue(alphaHex), hexColor);
+        invalidateUI(convertHexStr2AlphaValue(alphaHex), hexColor, true);
     }
 
     private String convertAlphaValue2HexStr(int value){
@@ -105,6 +114,9 @@ public class ColorPanel extends JFrame  {
     }
 
     private int convertHexStr2AlphaValue(String hexStr){
+        if (TextUtils.isEmpty(hexStr) || !isHexNumber(hexStr)){
+            return 0;
+        }
         int value = Integer.parseInt(hexStr, 16);
         return (int) ((1 - (float) value / 255) * 100);
     }
@@ -121,6 +133,9 @@ public class ColorPanel extends JFrame  {
     }
 
     private void changeHexColorField(){
+        if (!textFieldHexColor.hasFocus()){
+            return;
+        }
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -130,26 +145,27 @@ public class ColorPanel extends JFrame  {
                     return;
                 }
 
-                String alphaHexStr;
-                if (length == 6){
-                    alphaHexStr = "FF";
-                }else {
-                    alphaHexStr = hexColor.substring(0, length - 6);
-                }
-                invalidateUI(convertHexStr2AlphaValue(alphaHexStr), hexColor);
+                String alphaHexStr = hexColor.substring(0, length - 6);
+                invalidateUI(convertHexStr2AlphaValue(alphaHexStr), hexColor, false);
             }
         };
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void invalidateUI(int alphaValue, String hexColor){
+    private void invalidateUI(int alphaValue, String hexColor, boolean updateHexColorArea){
         if(TextUtils.isEmpty(hexColor) || hexColor.length() < 6 || hexColor.length() > 8 || !isHexNumber(hexColor)){
             return;
         }
         sliderAlpha.setValue(alphaValue);
         labelAlpha.setText(alphaValue + "%");
-        textFieldHexColor.setText(hexColor);
-        int a = Integer.parseInt(hexColor.substring(0, hexColor.length() - 6), 16);
+        if (updateHexColorArea) {
+            textFieldHexColor.setText(hexColor);
+        }
+        int a = 255;
+        String aStr = hexColor.substring(0, hexColor.length() - 6);
+        if (!TextUtils.isEmpty(aStr)) {
+            a = Integer.parseInt(aStr, 16);
+        }
         int r = Integer.parseInt(hexColor.substring(hexColor.length() - 6, hexColor.length() - 4), 16);
         int g = Integer.parseInt(hexColor.substring(hexColor.length() - 4, hexColor.length() - 2), 16);
         int b = Integer.parseInt(hexColor.substring(hexColor.length() - 2, hexColor.length()), 16);
@@ -157,7 +173,14 @@ public class ColorPanel extends JFrame  {
         textFieldR.setText(String.valueOf(r));
         textFieldG.setText(String.valueOf(g));
         textFieldB.setText(String.valueOf(b));
-        colorPreviewTextArea.setBackground(new Color(r, g, b, a));
+
+        StyleConstants.setForeground(simpleAttributeSet, new Color(r, g, b, a));
+        StyleConstants.setBackground(simpleAttributeSet, Color.WHITE);
+        StyleConstants.setUnderline(simpleAttributeSet, Boolean.TRUE);
+        StyleConstants.setBold(simpleAttributeSet, true);
+
+        colorPreviewTextPane.getStyledDocument().setCharacterAttributes(0, colorPreviewTextPane.getText().length(),
+                simpleAttributeSet, false);
     }
 
     private void injectHexColor(Editor editor, String color){

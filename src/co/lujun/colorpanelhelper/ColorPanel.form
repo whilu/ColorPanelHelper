@@ -152,9 +152,9 @@
           <text value="Ok"/>
         </properties>
       </component>
-      <component id="bdd85" class="javax.swing.JTextArea" binding="colorPreviewTextArea" default-binding="true">
+      <component id="89eb" class="javax.swing.JTextPane" binding="colorPreviewTextPane" default-binding="true">
         <constraints>
-          <grid row="1" column="4" row-span="1" col-span="5" vsize-policy="6" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="1" column="4" row-span="1" col-span="4" vsize-policy="6" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="120" height="-1"/>
           </grid>
         </constraints>
