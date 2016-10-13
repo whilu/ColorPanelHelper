@@ -1,17 +1,20 @@
 <idea-plugin version="2">
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
-  <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <id>co.lujun.plugin.colorpanelhelper</id>
+  <name>ColorPanelHelper</name>
+  <version>1.0.0</version>
+  <vendor email="lujun.byte@gmail.com" url="http://www.lujun.co">lujun</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      <html>Convert color with alpha value to hex format<br/>
+      <a href="https://github.com/whilu/colorpanelhelper">ColorPanelHelper on GitHub</a>
+      </html>
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      <li>
+      1.0.0(2016-10-13)<br/>
+      - Beta version
+      </li>
     ]]>
   </change-notes>
 
@@ -20,9 +23,8 @@
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
-  <!-- uncomment to enable plugin in all products
+  <!-- uncomment to enable plugin in all products-->
   <depends>com.intellij.modules.lang</depends>
-  -->
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->

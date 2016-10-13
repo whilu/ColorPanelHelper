@@ -39,7 +39,7 @@ public class ColorPanel extends JFrame  {
     public ColorPanel(Editor editor, String hexColor){
         super("ColorPanelHelper");
         setContentPane(rootPanelContainer);
-        setPreferredSize(new Dimension(410, 160));
+        setPreferredSize(new Dimension(450, 160));
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         pack();
         initView(editor, hexColor);
