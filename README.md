@@ -20,7 +20,7 @@ option + C (OS X), alt + C (WIN)
 Choose your color string, use shortcut, then adjust the color, click 'Ok' button
 
 ## Change logs
-###1.0.0(2016-10-13)
+### 1.0.0(2016-10-13)
 - Beta version(1.0.0)
 
 ## About
